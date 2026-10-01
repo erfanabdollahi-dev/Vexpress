@@ -12,8 +12,14 @@ app.get("/", (req, res) => {
   res.end("hello word")
 })
 
-app.get("/readme", (req, res) => {
-  res.end("this is about me")
+app.get("/users/", (req, res) => {
+  res.end("list of all usrs")
+})
+app.get("/users/:id", (req, res) => {
+  res.end("user with the id of #")
+})
+app.get("/users/:id/comments", (req, res) => {
+  res.end("list of the comments of the user with the id of #")
 })
 
 app.listen(3000)

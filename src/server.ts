@@ -8,10 +8,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  console.log("Middleware B");
-  next();
-});
+app.get("/", (req, res) => {
+  res.end("hello word")
+})
+
+app.get("/readme", (req, res) => {
+  res.end("this is about me")
+})
 
 app.listen(3000)
-

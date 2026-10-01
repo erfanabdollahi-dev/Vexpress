@@ -1,5 +1,6 @@
 import type { IncomingMessage } from "node:http";
 import type { Route } from "../types/route.js";
+import type { Request } from "../types/http.js";
 
 export const findRoute = (routes: Route[], req: IncomingMessage) => {
   for (const route of routes) {
@@ -19,12 +20,14 @@ export const findRoute = (routes: Route[], req: IncomingMessage) => {
     }
 
     let matched = true;
-
+    let params : Record<string, string | undefined> = {}
     for (const index in routeSegments) {
       const routeSegment = routeSegments[index];
       const urlSegment = urlSegments[index];
 
       if (routeSegment?.startsWith(":")) {
+        const paramKey = routeSegment.slice(1)
+        params[paramKey] = urlSegment
         continue;
       }
 
@@ -35,9 +38,9 @@ export const findRoute = (routes: Route[], req: IncomingMessage) => {
     }
 
     if (matched) {
-      return route;
+      return {route, params};
     }
   }
 
   return undefined;
-};
+}; 

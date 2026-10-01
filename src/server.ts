@@ -21,5 +21,8 @@ app.get("/users/:id", (req, res) => {
 app.get("/users/:id/comments", (req, res) => {
   res.end("list of the comments of the user with the id of #")
 })
+app.get("/users/:id/comments/:commentId", (req, res) => {
+  res.end(`user id : ${req.params.id}, comment id : ${req.params.commentId}`)
+})
 
 app.listen(3000)

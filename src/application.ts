@@ -3,6 +3,7 @@ import { dispatch } from "./middleware/dispatcher.js";
 import { findRoute } from "./router/matcher.js";
 import type { Middleware } from "./types/middleware.js";
 import type { Handler, Route } from "./types/route.js";
+import type { Request } from "./types/http.js";
 export class Application {
   private server: http.Server;
   private middlewares: Middleware[] = [];
@@ -11,9 +12,11 @@ export class Application {
   constructor() {
     this.server = http.createServer((req, res) => {
       dispatch(this.middlewares, req, res, () => {
-        const route = findRoute(this.routes, req);
-        if (route) {
-          route.handler(req, res);
+        const result = findRoute(this.routes, req);
+        if (result) {
+          const request = req as Request
+          request.params = result.params
+          result.route.handler(request, res);
         } else {
           res.writeHead(404, { "content-type": "text/plain" });
           res.end("Not Found");

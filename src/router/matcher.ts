@@ -1,19 +1,22 @@
 import type { IncomingMessage } from "node:http";
 import type { Route } from "../types/route.js";
-import type { Request } from "../types/http.js";
+import type { Query } from "../types/http.js";
 
 export const findRoute = (routes: Route[], req: IncomingMessage) => {
   for (const route of routes) {
     if (req.method !== route.method) {
       continue;
     }
-
+    
+    const url = new URL(req.url ?? "", `http://${req.headers.host}`)
+    const query = Object.fromEntries(url.searchParams.entries());
+    // for (const [key, value] of url.searchParams.entries()) {
+    //   query[key] = value
+    // }
+  
     const routeSegments = route.path.split("/").filter(Boolean);
-    const urlSegments = req.url?.split("/").filter(Boolean);
-
-    if (!urlSegments) {
-      return undefined;
-    }
+    const urlSegments = url.pathname.split("/").filter(Boolean);
+   
 
     if (routeSegments.length !== urlSegments.length) {
       continue;
@@ -38,7 +41,7 @@ export const findRoute = (routes: Route[], req: IncomingMessage) => {
     }
 
     if (matched) {
-      return {route, params};
+      return {route, params, query};
     }
   }
 

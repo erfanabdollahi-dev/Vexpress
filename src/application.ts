@@ -16,6 +16,7 @@ export class Application {
         if (result) {
           const request = req as Request
           request.params = result.params
+          request.query = result.query
           result.route.handler(request, res);
         } else {
           res.writeHead(404, { "content-type": "text/plain" });

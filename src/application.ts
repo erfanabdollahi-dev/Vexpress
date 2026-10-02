@@ -14,18 +14,22 @@ export class Application {
       dispatch(this.middlewares, req, res, () => {
         const result = findRoute(this.routes, req);
         if (result) {
-          const request = req as Request
-          request.params = result.params
-          request.query = result.query
+          const request = req as Request;
+          request.params = result.params;
+          request.query = result.query;
 
-          const response = res as Response
+          const response = res as Response;
           response.json = (data) => {
             response.writeHead(200, {
-              "content-type" : "application/json"
-            })
+              "content-type": "application/json",
+            });
 
-            response.end(JSON.stringify(data))
-          }
+            response.end(JSON.stringify(data));
+          };
+          response.redirect = (path) => {
+            response.writeHead(302, { Location: path })
+            res.end()
+          };
           result.route.handler(request, response);
         } else {
           res.writeHead(404, { "content-type": "text/plain" });

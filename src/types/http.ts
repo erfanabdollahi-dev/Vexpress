@@ -7,5 +7,6 @@ export type Request = IncomingMessage & {
   query: Query;
 };
 export type Response = ServerResponse & {
-  json(data: unknown) : void
+  json(data: unknown): void;
+  redirect(path: string): void;
 };

@@ -12,6 +12,14 @@ app.get("/", (req, res) => {
   res.json({"test": "worked"})
 })
 
+app.get("/old-page",(req,res) => {
+  res.redirect("/new-page")
+})
+
+app.get("/new-page", (req, res) => {
+  res.json({"redirected": "true"})
+})
+
 app.get("/users/", (req, res) => {
   res.end("list of all usrs")
 })

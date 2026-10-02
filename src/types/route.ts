@@ -1,7 +1,6 @@
-import type { ServerResponse } from "node:http";
-import type { Request } from "./http.js";
+import type { Request, Response } from "./http.js";
 
-export type Handler = (req: Request, res: ServerResponse) => void;
+export type Handler = (req: Request, res: Response) => void;
 export type Route = {
   method: "GET" | "POST" | "DELETE" | "PUT";
   path: string;

@@ -9,7 +9,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.end("hello word")
+  res.json({"test": "worked"})
 })
 
 app.get("/users/", (req, res) => {

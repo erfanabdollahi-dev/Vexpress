@@ -1,9 +1,9 @@
 import http from "node:http";
 import { dispatch } from "./middleware/dispatcher.js";
 import { findRoute } from "./router/matcher.js";
+import type { Request, Response } from "./types/http.js";
 import type { Middleware } from "./types/middleware.js";
 import type { Handler, Route } from "./types/route.js";
-import type { Request } from "./types/http.js";
 export class Application {
   private server: http.Server;
   private middlewares: Middleware[] = [];
@@ -17,7 +17,16 @@ export class Application {
           const request = req as Request
           request.params = result.params
           request.query = result.query
-          result.route.handler(request, res);
+
+          const response = res as Response
+          response.json = (data) => {
+            response.writeHead(200, {
+              "content-type" : "application/json"
+            })
+
+            response.end(JSON.stringify(data))
+          }
+          result.route.handler(request, response);
         } else {
           res.writeHead(404, { "content-type": "text/plain" });
           res.end("Not Found");

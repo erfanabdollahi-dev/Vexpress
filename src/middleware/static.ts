@@ -48,7 +48,10 @@ export const staticMiddleware = (root: string): Middleware => {
       "Content-Length": String(stats.size),
       "Last-Modified": stats.mtime.toUTCString(),
     });
-    if (req.method === "HEAD") return res.end();
+    if (req.method === "HEAD") {
+      res.end()
+      return;
+    }
 
     try {
       const buf = await fs.promises.readFile(filePath);

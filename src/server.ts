@@ -2,6 +2,7 @@ import vexpress from "./index.js";
 
 const app = vexpress()
 
+app.use(vexpress.static('./public'))
 
 app.use((req, res, next) => {
   console.log("Middleware A");

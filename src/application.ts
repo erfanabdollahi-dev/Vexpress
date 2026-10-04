@@ -5,7 +5,6 @@ import type { Request, Response } from "./types/http.js";
 import type { ErrorMiddleware, Middleware } from "./types/middleware.js";
 import type { Handler, Route } from "./types/route.js";
 
-  
 export class Application {
   private server: http.Server;
   private middlewares: Middleware[] = [];
@@ -19,12 +18,12 @@ export class Application {
         this.errorMiddlewares,
         req,
         res,
-        () => {
-          const result = findRoute(this.routes, req);
-          if (result) {
+        (handleError) => {
+          const routeResult = findRoute(this.routes, req);
+          if (routeResult) {
             const request = req as Request;
-            request.params = result.params;
-            request.query = result.query;
+            request.params = routeResult.params;
+            request.query = routeResult.query;
 
             const response = res as Response;
             response.json = (data) => {
@@ -38,7 +37,13 @@ export class Application {
               response.writeHead(302, { Location: path });
               res.end();
             };
-            result.route.handler(request, response);
+            try {
+              const result  = routeResult.route.handler(request, response);
+            
+              Promise.resolve(result).catch(handleError);
+            } catch (error) {
+              handleError(error);
+            }
           } else {
             res.writeHead(404, { "content-type": "text/plain" });
             res.end("Not Found");
@@ -57,15 +62,12 @@ export class Application {
     });
   }
 
-
-
   use(middleware: Middleware): void {
-      this.middlewares.push(middleware);
+    this.middlewares.push(middleware);
   }
   useError(errorMiddleware: ErrorMiddleware): void {
-      this.errorMiddlewares.push(errorMiddleware);
+    this.errorMiddlewares.push(errorMiddleware);
   }
-
 
   get(path: string, handler: Handler) {
     this.routes.push({ method: "GET", path, handler });
@@ -86,4 +88,3 @@ export class Application {
     });
   }
 }
-

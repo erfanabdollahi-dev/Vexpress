@@ -6,7 +6,7 @@ export function dispatch(
   errorMiddlewares: ErrorMiddleware[],
   req: IncomingMessage,
   res: ServerResponse,
-  onComplete: () => void,
+  onComplete: (handleError: (error: unknown) => void) => void,
   onError: (error: unknown) => void,
 ) {
   let errorIndex = 0;
@@ -38,7 +38,7 @@ export function dispatch(
 
   const next = () => {
     if (index >= middlewares.length) {
-      onComplete();
+      onComplete(handleError);
       return;
     }
     const middleware = middlewares[index];

@@ -26,8 +26,13 @@ app.get("/error", (req, res) => {
   throw new Error("Synchronous Route Error");
 });
 
+// 5. Async Error Trigger Route: Test promise rejection handling
+app.get("/async-error", async (req, res) => {
+  console.log("-> Triggering an asynchronous error inside a route...");
+  throw new Error("Asynchronous Route Error");
+});
 
-// 5. First Error Middleware: Catches the error, logs it, and forwards it down the chain
+// 6. First Error Middleware: Catches the error, logs it, and forwards it down the chain
 app.useError((err, req, res, next) => {
   const errorMessage = err instanceof Error ? err.message : String(err);
   console.log(`[Error Handler 1] Caught error: "${errorMessage}". Forwarding via next()...`);
@@ -36,7 +41,7 @@ app.useError((err, req, res, next) => {
   next(); 
 });
 
-// 6. Final Error Handler: Responsible for terminating the request with a 500 status
+// 7. Final Error Handler: Responsible for terminating the request with a 500 status
 app.useError((err, req, res, next) => {
   const errorMessage = err instanceof Error ? err.message : String(err);
   console.log(`[Error Handler 2] Terminating response for error: "${errorMessage}"`);

@@ -1,14 +1,26 @@
 {
   "name": "vexpress",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A lightweight HTTP framework built with Node.js and TypeScript",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
   },
-  "keywords": [],
+  "keywords": [
+    "http",
+    "framework",
+    "node",
+    "typescript"
+  ],
   "type": "module",
   "devDependencies": {
     "@types/node": "^26.6.3",

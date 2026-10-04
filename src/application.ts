@@ -11,31 +11,45 @@ export class Application {
 
   constructor() {
     this.server = http.createServer((req, res) => {
-      dispatch(this.middlewares, req, res, () => {
-        const result = findRoute(this.routes, req);
-        if (result) {
-          const request = req as Request;
-          request.params = result.params;
-          request.query = result.query;
+      dispatch(
+        this.middlewares,
+        req,
+        res,
+        () => {
+          const result = findRoute(this.routes, req);
+          if (result) {
+            const request = req as Request;
+            request.params = result.params;
+            request.query = result.query;
 
-          const response = res as Response;
-          response.json = (data) => {
-            response.writeHead(200, {
-              "content-type": "application/json",
-            });
+            const response = res as Response;
+            response.json = (data) => {
+              response.writeHead(200, {
+                "content-type": "application/json",
+              });
 
-            response.end(JSON.stringify(data));
-          };
-          response.redirect = (path) => {
-            response.writeHead(302, { Location: path })
-            res.end()
-          };
-          result.route.handler(request, response);
-        } else {
-          res.writeHead(404, { "content-type": "text/plain" });
-          res.end("Not Found");
-        }
-      });
+              response.end(JSON.stringify(data));
+            };
+            response.redirect = (path) => {
+              response.writeHead(302, { Location: path });
+              res.end();
+            };
+            result.route.handler(request, response);
+          } else {
+            res.writeHead(404, { "content-type": "text/plain" });
+            res.end("Not Found");
+          }
+        },
+        (error) => {
+          console.error(error);
+
+          res.writeHead(500, {
+            "content-type": "text/plain",
+          });
+
+          res.end("Internal Server Error");
+        },
+      );
     });
   }
 

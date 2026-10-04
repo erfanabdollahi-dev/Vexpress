@@ -5,6 +5,6 @@ export type Middleware = (
   req: IncomingMessage,
   res: ServerResponse,
   next: NextFunction
-) => void
+) => void | Promise<void>
 
 

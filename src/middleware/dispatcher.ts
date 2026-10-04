@@ -5,22 +5,29 @@ export function dispatch(
   middlewares: Middleware[],
   req: IncomingMessage,
   res: ServerResponse,
-  onComplete: ()=>void,
+  onComplete: () => void,
+  onError: (error: unknown) => void,
 ) {
   let index = 0;
 
   const next = () => {
     if (index >= middlewares.length) {
-      onComplete()
-      return
+      onComplete();
+      return;
     }
     const middleware = middlewares[index];
     if (!middleware) return;
     index++;
-    middleware(req,res, next)
+    try {
+      const result = middleware(req, res, next);
+      Promise.resolve(result).catch((error) => {
+        // handle error
+        onError(error);
+      });
+    } catch (error) {
+      // handle error
+      onError(error);
+    }
   };
-  next()
-
+  next();
 }
-
-

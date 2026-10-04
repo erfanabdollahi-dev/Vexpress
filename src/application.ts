@@ -2,17 +2,21 @@ import http from "node:http";
 import { dispatch } from "./middleware/dispatcher.js";
 import { findRoute } from "./router/matcher.js";
 import type { Request, Response } from "./types/http.js";
-import type { Middleware } from "./types/middleware.js";
+import type { ErrorMiddleware, Middleware } from "./types/middleware.js";
 import type { Handler, Route } from "./types/route.js";
+
+  
 export class Application {
   private server: http.Server;
   private middlewares: Middleware[] = [];
+  private errorMiddlewares: ErrorMiddleware[] = [];
   private routes: Route[] = [];
 
   constructor() {
     this.server = http.createServer((req, res) => {
       dispatch(
         this.middlewares,
+        this.errorMiddlewares,
         req,
         res,
         () => {
@@ -53,9 +57,15 @@ export class Application {
     });
   }
 
-  use(middleware: Middleware) {
-    this.middlewares.push(middleware);
+
+
+  use(middleware: Middleware): void {
+      this.middlewares.push(middleware);
   }
+  useError(errorMiddleware: ErrorMiddleware): void {
+      this.errorMiddlewares.push(errorMiddleware);
+  }
+
 
   get(path: string, handler: Handler) {
     this.routes.push({ method: "GET", path, handler });
@@ -76,3 +86,4 @@ export class Application {
     });
   }
 }
+

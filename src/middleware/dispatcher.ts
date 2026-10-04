@@ -1,13 +1,39 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { Middleware } from "../types/middleware.js";
+import type { ErrorMiddleware, Middleware } from "../types/middleware.js";
 
 export function dispatch(
   middlewares: Middleware[],
+  errorMiddlewares: ErrorMiddleware[],
   req: IncomingMessage,
   res: ServerResponse,
   onComplete: () => void,
   onError: (error: unknown) => void,
 ) {
+  let errorIndex = 0;
+
+  const handleError = (error: unknown) => {
+    const middleware = errorMiddlewares[errorIndex];
+
+    if (!middleware) {
+      onError(error);
+      return;
+    }
+
+    errorIndex++;
+
+    try {
+      const result = middleware(error, req, res, () => {
+        handleError(error);
+      });
+
+      Promise.resolve(result).catch((error) => {
+        handleError(error);
+      });
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   let index = 0;
 
   const next = () => {
@@ -22,12 +48,13 @@ export function dispatch(
       const result = middleware(req, res, next);
       Promise.resolve(result).catch((error) => {
         // handle error
-        onError(error);
+        handleError(error);
       });
     } catch (error) {
       // handle error
-      onError(error);
+      handleError(error);
     }
   };
+
   next();
 }

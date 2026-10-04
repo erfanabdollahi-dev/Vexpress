@@ -46,3 +46,4 @@ temp/
 *.tmp
 
 public/
+*.tgz
